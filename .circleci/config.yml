@@ -336,6 +336,7 @@ workflows:
                 # release-XX.YY.ZZ
                 # release-XX.YY.ZZ-rc-something
                 - /^release-\d+(\.\d+){1,2}(-rc.*)?/
+                - MM-22495_fix-uac-name
       - build-linux:
           requires:
             - check
@@ -347,6 +348,7 @@ workflows:
             branches:
               ignore:
                 - /^release-\d+(\.\d+){1,2}(-rc.*)?/
+                - MM-22495_fix-uac-name
 
       - build-mac-no-dmg:
           requires:
@@ -355,6 +357,7 @@ workflows:
             branches:
               ignore:
                 - /^release-\d+(\.\d+){1,2}(-rc.*)?/
+                - MM-22495_fix-uac-name
 
       - msi_installer:
           requires:
@@ -367,6 +370,7 @@ workflows:
                 # release-XX.YY.ZZ
                 # release-XX.YY.ZZ-rc-something
                 - /^release-\d+(\.\d+){1,2}(-rc.*)?/
+                - MM-22495_fix-uac-name
 
       - mac_installer:
           requires:
@@ -376,6 +380,7 @@ workflows:
             branches:
               only:
                 - /^release-\d+(\.\d+){1,2}(-rc.*)?/
+                - MM-22495_fix-uac-name
 
       - store_artifacts:
           # for master/PR builds
@@ -387,6 +392,7 @@ workflows:
             branches:
               ignore:
                 - /^release-\d+(\.\d+){1,2}(-rc.*)?/
+                - MM-22495_fix-uac-name
 
       - upload_to_s3:
           # for release builds
@@ -399,6 +405,7 @@ workflows:
             branches:
               only:
                 - /^release-\d+(\.\d+){1,2}(-rc.*)?/
+                - MM-22495_fix-uac-name
 
       - upload_to_github:
           requires:
@@ -410,6 +417,7 @@ workflows:
             branches:
               only:
                 - /^release-\d+(\.\d+){1,2}(-rc.*)?/
+                - MM-22495_fix-uac-name
       - end-notification:
           requires:
             - upload_to_github
@@ -421,3 +429,4 @@ workflows:
                 # release-XX.YY.ZZ
                 # release-XX.YY.ZZ-rc-something
                 - /^release-\d+(\.\d+){1,2}(-rc.*)?/
+                - MM-22495_fix-uac-name
