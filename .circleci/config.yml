@@ -47,7 +47,7 @@ commands:
             echo '{}' | jq '{
               "username": "<< parameters.username >>",
               "icon_url": "<< parameters.icon >>",
-              "text": "<< parameters.message >>"
+              "text": "[${VERSION}] << parameters.message >>"
             }' >> /tmp/webhook-data.json
       - run:
           command: |
@@ -310,7 +310,7 @@ jobs:
       - update_image:
           apt_opts: "--no-install-recommends jq"
       - notify:
-          message: "Release process for the desktop app v${VERSION} has started, it should take about 30 minutes to complete."
+          message: "Release process for the desktop app has started, it should take about 30 minutes to complete."
   
   end-notification:
     executor: wine-chrome
@@ -319,7 +319,7 @@ jobs:
       - update_image:
           apt_opts: "--no-install-recommends jq"
       - notify:
-          message: "Release process for the desktop app v${VERSION} ended, new release can be found on (github's releases)[https://github.com/mattermost/desktop/releases]"
+          message: "Release process for the desktop app ended, new release can be found on (github's releases)[https://github.com/mattermost/desktop/releases]"
 
 
 workflows:
