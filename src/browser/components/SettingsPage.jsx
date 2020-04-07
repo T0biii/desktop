@@ -467,14 +467,16 @@ export default class SettingsPage extends React.Component {
   }
 
   handleDoubleClick = () => {
-    const doubleClickAction = remote.systemPreferences.getUserDefault('AppleActionOnDoubleClick', 'string');
-    const win = remote.getCurrentWindow();
-    if (doubleClickAction === 'Minimize') {
-      win.minimize();
-    } else if (doubleClickAction === 'Maximize' && !win.isMaximized()) {
-      win.maximize();
-    } else if (doubleClickAction === 'Maximize' && win.isMaximized()) {
-      win.unmaximize();
+    if (process.platform === 'darwin') {
+      const doubleClickAction = remote.systemPreferences.getUserDefault('AppleActionOnDoubleClick', 'string');
+      const win = remote.getCurrentWindow();
+      if (doubleClickAction === 'Minimize') {
+        win.minimize();
+      } else if (!win.isMaximized()) {
+        win.maximize();
+      } else if (win.isMaximized()) {
+        win.unmaximize();
+      }
     }
   }
 
@@ -631,7 +633,7 @@ export default class SettingsPage extends React.Component {
             addServer={this.addServer}
             allowTeamEdit={this.state.enableTeamModification}
             onTeamClick={(index) => {
-              backToIndex(index + this.state.buildTeams.length + this.state.registryTeams.length);
+              backToIndex(this.state.localTeams[index].order + this.state.buildTeams.length + this.state.registryTeams.length);
             }}
             modalContainer={this}
           />

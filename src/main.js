@@ -86,6 +86,18 @@ const customLoginRegexPaths = [
 // tracking in progress custom logins
 const customLogins = {};
 
+const nixUA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome Safari/537.36';
+
+const popupUserAgent = {
+  darwin: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome Safari/537.36',
+  win32: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome Safari/537.36',
+  aix: nixUA,
+  freebsd: nixUA,
+  linux: nixUA,
+  openbsd: nixUA,
+  sunos: nixUA,
+};
+
 /**
  * Main entry point for the application, ensures that everything initializes in the proper order
  */
@@ -476,12 +488,13 @@ function handleAppWebContentsCreated(dc, contents) {
   contents.on('did-start-navigation', (event, url) => {
     const contentID = event.sender.id;
     const parsedURL = Utils.parseURL(url);
+    const server = Utils.getServer(parsedURL, config.teams);
 
     if (!isTrustedURL(parsedURL)) {
       return;
     }
 
-    if (isCustomLoginURL(parsedURL)) {
+    if (isCustomLoginURL(parsedURL, server)) {
       customLogins[contentID].inProgress = true;
     } else if (customLogins[contentID].inProgress) {
       customLogins[contentID].inProgress = false;
@@ -524,7 +537,12 @@ function handleAppWebContentsCreated(dc, contents) {
           popupWindow = null;
         });
       }
-      popupWindow.loadURL(url);
+
+      // currently changing the userAgent for popup windows to allow plugins to go through google's oAuth
+      // should be removed once a proper oAuth2 implementation is setup.
+      popupWindow.loadURL(url, {
+        userAgent: popupUserAgent[process.platform],
+      });
     }
   });
 
@@ -717,7 +735,7 @@ function initializeAfterAppReady() {
     });
   }
 
-  session.defaultSession.on('will-download', (event, item) => {
+  session.defaultSession.on('will-download', (event, item, webContents) => {
     const filename = item.getFilename();
     const fileElements = filename.split('.');
     const filters = [];
@@ -737,6 +755,16 @@ function initializeAfterAppReady() {
       title: filename,
       defaultPath: os.homedir() + '/Downloads/' + filename,
       filters,
+    });
+
+    item.on('done', (doneEvent, state) => {
+      if (state === 'completed') {
+        mainWindow.webContents.send('download-complete', {
+          fileName: filename,
+          path: item.getSavePath(),
+          serverInfo: Utils.getServer(webContents.getURL(), config.teams),
+        });
+      }
     });
   });
 
