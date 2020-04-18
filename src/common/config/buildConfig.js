@@ -17,14 +17,14 @@
  *                                          when "enableServerManagement is set to false
  */
 const buildConfig = {
-  defaultTeams: [/*
+  defaultTeams: [
     {
-      name: 'example',
-      url: 'https://example.com'
+      name: 'FFMUC-Chat',
+      url: 'https://chat.ffmuc.net'
     }
-  */],
+  ],
   helpLink: 'https://about.mattermost.com/default-desktop-app-documentation/',
-  enableServerManagement: true,
+  enableServerManagement: false,
   enableAutoUpdater: true,
 };
 
